@@ -1,0 +1,69 @@
+apply plugin: 'java'
+apply plugin: 'org.flywaydb.flyway'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.postgresql:postgresql:9.3-1100-jdbc4'
+        classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1'
+    }
+}
+
+//task initTestDB {
+//    flyway {
+//        url = 'jdbc:postgresql://localhost:5432/user_management_test'
+//        user = "postgres"
+//    }
+//}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/user_management'
+    user = 'postgres'
+    password = '315885'
+}
+
+//gradle flywayMigrate -Dflyway.schemas=user_management_test -i
+//task initDevDB {
+//}
+
+
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integrationTest/java')
+        resources.srcDir file('src/integrationTest/resources')
+    }
+}
+
+dependencies {
+    compile 'org.postgresql:postgresql:9.3-1100-jdbc4'
+    compile 'org.springframework:spring-core:4.0.6.RELEASE'
+    compile 'org.springframework:spring-beans:4.0.6.RELEASE'
+    compile 'org.springframework:spring-jdbc:4.0.6.RELEASE'
+    compile 'org.springframework:spring-orm:4.0.6.RELEASE'
+    compile 'org.springframework:spring-context:4.0.6.RELEASE'
+    compile 'org.springframework:spring-context-support:4.0.6.RELEASE'
+    compile 'org.springframework:spring-tx:4.0.6.RELEASE'
+    compile 'org.hibernate:hibernate-core:4.3.5.Final'
+    compile 'org.hibernate:hibernate-entitymanager:4.3.5.Final'
+    compile 'org.springframework.security:spring-security-core:3.2.4.RELEASE'
+
+    testCompile 'junit:junit:4.10'
+    testCompile 'org.springframework:spring-test:4.0.6.RELEASE'
+
+    integrationTestCompile sourceSets.main.output
+    integrationTestCompile configurations.testCompile
+    integrationTestCompile sourceSets.test.output
+    integrationTestCompile configurations.testRuntime
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath += sourceSets.integrationTest.runtimeClasspath
+}
+
+//gradle integrationTest flywayClean -i
+//gradle integrationTest flywayMigrate -i
+//integrationTest.dependsOn initTestDB
