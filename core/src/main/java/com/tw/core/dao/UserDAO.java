@@ -1,7 +1,10 @@
 package com.tw.core.dao;
 
 import com.tw.core.User;
+import com.tw.core.service.PasswordService;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +19,12 @@ import java.util.List;
 public class UserDAO {
 
     private SessionFactory sessionFactory;
+    private PasswordService passwordService;
 
     @Autowired
     public UserDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+        this.passwordService = new PasswordService();
     }
 
     public List<User> listUser() {
@@ -28,6 +33,7 @@ public class UserDAO {
     }
 
     public void addUser(User user) {
+        user.setPassword(passwordService.encrypt(user.getPassword()));
         sessionFactory.getCurrentSession().save(user);
     }
 
@@ -37,14 +43,19 @@ public class UserDAO {
     }
 
     public User findUserByNameAndPassword(User user) {
+        User rUser;
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
         criteria.add(Restrictions.eq("name", user.getName()));
-        criteria.add(Restrictions.eq("password", user.getPassword()));
+        criteria.add(Restrictions.eq("password", passwordService.encrypt(user.getPassword())));
         criteria.setFirstResult(0);
         criteria.setMaxResults(1);
 
-        User user = (User) criteria.list().pop();
-        return user;
+        if (criteria.list().size() > 0) {
+            rUser = (User) criteria.list().get(0);
+        } else {
+            rUser = new User();
+        }
+        return rUser;
     }
 
     public void updateUser(User user) {

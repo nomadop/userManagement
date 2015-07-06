@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -26,6 +27,9 @@ public class UserController {
     public List<User> listUser() {
         return userService.listUser();
     }
+
+    @RequestMapping("/enter")
+    public ModelAndView enter() { return new ModelAndView("enter"); }
 
     @RequestMapping(value = "/")
     public ModelAndView listOfUsers() {
@@ -52,12 +56,32 @@ public class UserController {
         return  modelAndView;
     }
 
-    @RequestMapping(value = "/login", method = RequestMapping.POST)
-    public ModelAndView logUserIn(@ModelAttribute User user) {
-        ModelAndView modelAndView = new ModelAndView("userList");
-        User user = userService.findUserByNameAndPassword(user);
-        String message = "Login successfully.";
-        modelAndView.addObject("user", user);
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public ModelAndView logUserIn(@ModelAttribute User user, @CookieValue(value = "redirectUrl", required = false, defaultValue = "/user/") String redirectUrl, HttpSession session) {
+        ModelAndView modelAndView;
+        User rUser = userService.findUserByNameAndPassword(user);
+        String message;
+        if (rUser.getId() > 0) {
+            message = "Login successfully.";
+            session.setAttribute("currentUserId", rUser.getId());
+            session.setAttribute("currentUserName", rUser.getName());
+            modelAndView = new ModelAndView("redirect:" + redirectUrl);
+            modelAndView.addObject("users", userService.listUser());
+        } else {
+            message = "Wrong username or password.";
+            modelAndView = new ModelAndView("enter");
+        }
+        modelAndView.addObject("message", message);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/logout")
+    public ModelAndView logUserOut(HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView("enter");
+        String message = "Logged out.";
+        session.removeAttribute("currentUserId");
+        session.removeAttribute("currentUserName");
+        modelAndView.addObject("message", message);
         return modelAndView;
     }
 

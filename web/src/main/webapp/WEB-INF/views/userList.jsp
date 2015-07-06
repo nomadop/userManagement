@@ -1,6 +1,10 @@
+<%@ page import="com.tw.core.User" %>
+<%@ page import="javax.validation.constraints.Null" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <?xml version="1.0" encoding="utf-8" ?>
 <%@ page language="java" contentType="text/html; charset=utf-8"  pageEncoding="utf-8"%>
+<% String currentUserName = (String) session.getAttribute("currentUserName"); %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -20,6 +24,26 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="#">用户管理</a></li>
             </ul>
+            <% if (currentUserName != null) {%>
+            <p class="navbar-text navbar-right">
+                Welcome <%= currentUserName %>!
+                <a href="${pageContext.request.contextPath}/user/logout">登出</a>
+            </p>
+            <% } else { %>
+            <form action="${pageContext.request.contextPath}/user/login" class="navbar-form navbar-right" method="post">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input name="name" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input name="password" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input class="btn btn-primary" type="submit" value="登录" />
+                </div>
+            </form>
+            <% } %>
         </div>
     </div>
 </div>

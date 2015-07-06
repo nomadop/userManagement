@@ -36,6 +36,9 @@ public class UserService {
     }
 
     @Transactional
+    public User findUserByNameAndPassword(User user) { return userDAO.findUserByNameAndPassword(user); }
+
+    @Transactional
     public void updateUser(User user) {
         userDAO.updateUser(user);
     }

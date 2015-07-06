@@ -16,7 +16,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Gradle: mysql:mysql-connector-java:5.1.31" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.postgresql:postgresql:9.3-1100-jdbc4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-core:4.0.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-beans:4.0.6.RELEASE" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.springframework:spring-jdbc:4.0.6.RELEASE" level="project" />
